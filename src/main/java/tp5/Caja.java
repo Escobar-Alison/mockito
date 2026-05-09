@@ -15,3 +15,10 @@ public class Caja {
         return pagables.stream().mapToDouble(p -> p.precioAPagar()).sum();
     }
 }
+
+
+/*
+* Las interfaces me permite
+*
+* Cualquier instancia de una clase que implemente la interfaz de ...
+* */

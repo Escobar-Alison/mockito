@@ -1,6 +1,5 @@
-package org.tp9;
+package tp9;
 
-import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
@@ -10,23 +9,63 @@ import java.util.stream.Collectors;
 /*DATOS DE CARTAS*/
 //P = picas, C = corazones, D = diamantes, T = tréboles
 //1 al 10 + J, Q y K
-
+//SOLO HAY UN MASO
 
 public class PokerStatus {
     //private List<String> conjuntoCartas;
 
-    public boolean verificar(String c1, String c2, String c3, String c4, String c5){
-        List<String>      cartas     = Arrays.asList(c1, c2, c3, c4, c5);
-        List<String>      valores    = this.obtenerValores(cartas); //Solo los numeros
+    public String verificar(String c1, String c2, String c3, String c4, String c5) {
+        List<String> cartas = Arrays.asList(c1, c2, c3, c4, c5);
+
+        if (this.esPoker(cartas)) {
+            return "Poquer";
+        }
+        if (this.esColor(cartas)) {
+            return "Color";
+        }
+        if (this.esTrio(cartas)) {
+            return "Trio";
+        }
+        return "Sin jugada";
+    }
+
+    //POKER; 4 de igual valor (nro)
+    public boolean esPoker(List<String> cartas) {
+        List<String>      valores    = this.obtenerValores(cartas);
         Map<String, Long> cantidades = this.contarRepetidas(valores);
 
         return this.tieneCantidad(cantidades, 4);
     }
 
-    private List<String> obtenerValores(List<String> cs) {
-        return cs.stream()
-                    .map(carta -> carta.substring(0, carta.length()-1))
-                    .toList();
+    //COLOR; 5 del mismo color/palo
+    public boolean esColor(List<String> cartas) {
+        List<String>      palos      = this.obtenerPalos(cartas);
+        Map<String, Long> cantidades = this.contarRepetidas(palos);
+
+        return this.tieneCantidad(cantidades, 5);
+    }
+
+    //TRIO; 3 de mismo valor (nro)
+    public boolean esTrio(List<String> cartas) {
+        List<String>      valores    = this.obtenerValores(cartas);
+        Map<String, Long> cantidades = this.contarRepetidas(valores);
+
+        return this.tieneCantidad(cantidades, 3);
+    }
+
+    private List<String> transformarCartas(List<String> cartas, Function<String, String> transformacion) {
+                                                            //lit es una función String carta -> String carta
+        return cartas.stream()
+                .map(transformacion)
+                .toList();
+    }
+
+    private List<String> obtenerPalos(List<String> cartas) {
+        return this.transformarCartas(cartas, carta -> carta.substring(carta.length()-1));
+    }
+
+    private List<String> obtenerValores(List<String> cartas) {
+        return this.transformarCartas(cartas, carta -> carta.substring(0, carta.length()-1));
     }
 
     private Map<String, Long> contarRepetidas(List<String> nrosCartas) {
@@ -41,7 +80,6 @@ public class PokerStatus {
     private boolean tieneCantidad(Map<String, Long> cant, int nro) {
         return cant.values().stream().anyMatch(c -> c >= nro);
     }
-
 
 }
 
